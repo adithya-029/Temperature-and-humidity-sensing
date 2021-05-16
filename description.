@@ -1,0 +1,3 @@
+connect the elements as shown in the diagram, the power supply can be used either by 5 volts Adapter or from PC using Arduino to USB cable, to compare the temperature
+we can use thermistor, so that it is easy to analyse the correct reading. try to change the places to obtain more changes in the temperature so that we can get the correct
+values.
