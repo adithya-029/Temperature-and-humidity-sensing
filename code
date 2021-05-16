@@ -1,0 +1,88 @@
+// Measurement with the DH11 and thermistor
+//Printout to terminal and to the LCD display
+
+#include <dht_nonblocking.h> // DH11
+#define DHT_SENSOR_TYPE DHT_TYPE_11 // DH11
+#include <LiquidCrystal.h> // LCD display
+
+static const int DHT_SENSOR_PIN = 2; //DH11
+DHT_nonblocking dht_sensor( DHT_SENSOR_PIN, DHT_SENSOR_TYPE ); //DH11
+
+int tempPin = 0; // Thermistor
+
+//                BS E D4  D5  D6  D7
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+
+// setup
+void setup()
+{
+  Serial.begin(9600);
+  
+  lcd.begin(16, 2);
+}
+
+static bool measure_environment( float *temperature, float *humidity ) // DH11
+{
+  static unsigned long measurement_timestamp = millis( );
+
+  /* Measure once every x seconds. */
+  if( millis( ) - measurement_timestamp > 10000ul )
+  {
+    if( dht_sensor.measure( temperature, humidity ) == true )
+    {
+      measurement_timestamp = millis( );
+      return( true );
+    }
+  }
+
+  return( false );
+}
+
+void loop()
+{
+  // Thermistor
+    int tempReading = analogRead(tempPin);
+    double tempK = log(10000.0 * ((1024.0 / tempReading - 1)));
+    tempK = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * tempK * tempK )) * tempK ); // Temp Kelvin
+    float tempC = tempK - 273.15;            // Convert Kelvin to Celcius
+    float tempF = (tempC * 9.0)/ 5.0 + 32.0; // Convert Celcius to Fahrenheit
+    
+  // DH11
+    float temperature;
+    float humidity;
+    if( measure_environment( &temperature, &humidity ) == true )
+    
+    {
+  // Print a terminal
+    Serial.print( "DH11 " );
+    Serial.print( temperature, 1 );
+    Serial.print(" C, " );
+    Serial.print( humidity, 1 );
+    Serial.print(" %; Therm ");
+    Serial.print(tempC);
+    Serial.print(" C, ");
+    Serial.print(tempF);
+    Serial.print(" F\n");
+    
+
+  // Display in the LCD
+    // Display Temperature from the Thermistor
+    lcd.setCursor(0, 0);
+    lcd.print("Therm        C  ");
+    lcd.setCursor(7, 0);
+    lcd.print(tempC);
+
+    // Display Temperature from the DH11
+    lcd.setCursor(0, 2);
+    lcd.print("DH11     C     %");
+    lcd.setCursor(5, 2);
+    lcd.print(temperature,1);
+
+    // Display Humidity from the DH11
+    lcd.setCursor(11, 2);
+    lcd.print(humidity,1);
+    
+    delay(500);
+    }
+}
+// This is the end.
