@@ -1,0 +1,10 @@
+#ELEMENTS IN THE PROJECT
+1)Arduino Uno
+2)16x2 LCD display
+3)DHT-11 sensor(digital humidity and temperature)
+4)Potentiometer -10K pot
+5)Thermistor(if needed)
+6)Resistor -2 - 1k ohm(or) 2k ohm
+7)connecting wires
+8)Arduino to USB cable (to dump the code)
+9)Bread board
